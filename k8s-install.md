@@ -15,10 +15,6 @@ To see the stack trace of this error execute with --v=5 or higher
 docker 버전 및 제대로 설치 안되어 있을 가능성 있음.
 
 
-kubeadm join 10.0.2.15:6443 --token 4qu6fc.ha15jcsyhuv9byi7 \
-        --discovery-token-ca-cert-hash sha256:224ced80ef2734bd43a9f78cb35a8577fffcb1bcb3d954ebb77a67b8d49f0c75
-
-
 [preflight] Running pre-flight checks
 error execution phase preflight: [preflight] Some fatal errors occurred:
         [ERROR CRI]: container runtime is not running: output: time="2020-11-25T12:58:32Z" level=fatal msg="getting status of runtime failed: rpc error: code = Unimplemented desc = unknown service runtime.v1alpha2.RuntimeService"
@@ -28,9 +24,7 @@ containerd 의 cir 설정이 false로 되어 있을수도 있어서 삭제해주
 1. etc/containered/config.toml 삭제
 2. systemctl restart containerd
 
-kubeadm join 192.168.1.10:6443 --token iky8im.n505sv8eqhh02ovq \
-        --discovery-token-ca-cert-hash sha256:6bba39c32378fb8e954fcc5b5f6fcd457fc9f1ee57553cee0bc2986767669ee6
-
+이닛 하기전
 1. kubeadm config images pull
 
 Installing a Pod network add-on
