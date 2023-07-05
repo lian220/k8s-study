@@ -54,9 +54,46 @@ openssl dgst -sha256
 
 kubeadm join 192.168.1.10:6443 --token {토큰명}
 --discovery-token-ca-cert-hash sha256:{pkey}
-
+q9gmry.lsz2o5gmxx23a148
+626ee974ae548717fe19df56d8a1defa0d604c60fd39640ec38f488e01ea8df1
 
 kubeadm reset --kubeconfig /etc/kubernetes/admin.conf --cri-socket /var/run/containerd/containerd.sock
 $ sudo kubeadm reset
 $ sudo systemctl restart kubelet
 $ sudo reboot
+
+https://bono915.tistory.com/entry/Kubernetes-VirtualBox-Node-INTERNAL-IP-%EC%84%A4%EC%A0%95-%EB%B0%A9%EB%B2%95
+
+컨테이너 접속 설정 (internal-ip 변경해야 접속 가능)
+1. 순서 확인
+vi /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+2. 파일위치
+vi /etc/sysconfig/kubelet
+3. 수정
+Environment="KUBELET_EXTRA_ARGS=--node-ip=192.168.1.11"
+4. 재시작
+systemctl daemon-reload && systemctl restart kubelet
+
+
+멀티 마스터
+1. 컨테이너 runtime 설치 (Docker)
+https://docs.docker.com/engine/install/centos/#install-using-the-repository
+
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo systemctl start docker
+sudo docker run hello-world
+
+## 2. kubeadm install
+1. systemctl stop firewalld && systemctl disable firewalld
+2. swapoff -a && sed -i '/swap/s/^/#/' /etc/fstab
+3. Set SELinux in permissive mode (effectively disabling it)
+setenforce 0
+sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+4. kubeadm, kubelet, kubectl 설치
+
+
+
+
+
