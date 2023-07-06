@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
 
   ### Worker node ###
 
-  (1..2).each do |i|
+  (1..3).each do |i|
     config.vm.define "k8s-worker#{i}" do |worker|
       worker.vm.box = "centos/7"
       worker.vm.provider "virtualbox" do |vb|

@@ -28,7 +28,7 @@ containerd 의 cir 설정이 false로 되어 있을수도 있어서 삭제해주
 1. kubeadm config images pull
 
 Installing a Pod network add-on
-kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.2/weave-daemonset-k8s.yaml
 kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
 
 
@@ -36,7 +36,7 @@ kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
 error execution phase preflight: couldn't validate the identity of the API Server: Get "https://10.0.2.15:6443/api/v1/namespaces/kube-public/configmaps/cluster-info?timeout=10s": dial tcp 10.0.2.15:6443: connect: connection refused
 To see the stack trace of this error execute with --v=5 or higher
 
-kubeadm init  --apiserver-advertise-address=192.168.1.10 --ignore-preflight-errors=NumCPU --pod-network-cidr=192.168.0.0/16
+kubeadm init  --apiserver-advertise-address=192.168.1.10 --pod-network-cidr=192.168.0.0/16
 
 1. 토큰 확인
 kubeadm token list
@@ -52,10 +52,8 @@ openssl x509 -in /etc/kubernetes/pki/ca.crt -pubkey -noout |
 openssl pkey -pubin -outform DER |
 openssl dgst -sha256
 
-kubeadm join 192.168.1.10:6443 --token {토큰명}
---discovery-token-ca-cert-hash sha256:{pkey}
-q9gmry.lsz2o5gmxx23a148
-626ee974ae548717fe19df56d8a1defa0d604c60fd39640ec38f488e01ea8df1
+kubeadm join 192.168.1.10:6443 --token {토큰명} --discovery-token-ca-cert-hash sha256:{pkey}
+68616e050b2674d3b2361c4892c2b643e38bfde0be42d4e128bdc92159ef9b70
 
 kubeadm reset --kubeconfig /etc/kubernetes/admin.conf --cri-socket /var/run/containerd/containerd.sock
 $ sudo kubeadm reset
@@ -75,15 +73,16 @@ Environment="KUBELET_EXTRA_ARGS=--node-ip=192.168.1.11"
 systemctl daemon-reload && systemctl restart kubelet
 
 
-멀티 마스터
-1. 컨테이너 runtime 설치 (Docker)
+# 멀티 마스터
+## 1. 컨테이너 runtime 설치 (Docker)
+- 도커 docs
 https://docs.docker.com/engine/install/centos/#install-using-the-repository
 
-sudo yum install -y yum-utils
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-sudo systemctl start docker
-sudo docker run hello-world
+yum install -y yum-utils
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+systemctl start docker
+docker run hello-world
 
 ## 2. kubeadm install
 1. systemctl stop firewalld && systemctl disable firewalld
@@ -92,6 +91,13 @@ sudo docker run hello-world
 setenforce 0
 sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 4. kubeadm, kubelet, kubectl 설치
+https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+repository 설정은 위 참고
+yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+
+worker서버에서 nodeport  netstat port조회가안되는 부분은 예전버전과 매커니즘이 좀 달라졌네요 (kube-proxy 에서 dnat로 포워딩)
+iptables -t nat -L KUBE-NODEPORTS | column -t
+
 
 
 
