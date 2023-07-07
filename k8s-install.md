@@ -21,15 +21,14 @@ error execution phase preflight: [preflight] Some fatal errors occurred:
 , error: exit status 1
 
 containerd 의 cir 설정이 false로 되어 있을수도 있어서 삭제해주는방법이 있다.
-1. etc/containered/config.toml 삭제
+1. rm /etc/containered/config.toml 삭제
 2. systemctl restart containerd
 
 이닛 하기전
 1. kubeadm config images pull
 
 Installing a Pod network add-on
-kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.2/weave-daemonset-k8s.yaml
-kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
+kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
 
 
 ### 토큰 인증문제
@@ -52,7 +51,7 @@ openssl x509 -in /etc/kubernetes/pki/ca.crt -pubkey -noout |
 openssl pkey -pubin -outform DER |
 openssl dgst -sha256
 
-kubeadm join 192.168.1.10:6443 --token {토큰명} --discovery-token-ca-cert-hash sha256:{pkey}
+526ec61ef735a748931f90891243c276209ae0a73f9b988bde79b740ccffc4db
 68616e050b2674d3b2361c4892c2b643e38bfde0be42d4e128bdc92159ef9b70
 
 kubeadm reset --kubeconfig /etc/kubernetes/admin.conf --cri-socket /var/run/containerd/containerd.sock
@@ -81,8 +80,13 @@ https://docs.docker.com/engine/install/centos/#install-using-the-repository
 yum install -y yum-utils
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-systemctl start docker
+systemctl start docker && systemctl enable docker
 docker run hello-world
+
+#도커 최신버진 지원 안할시
+yum -y install docker-ce-19.03.0 docker-ce-cli-19.03.0
+systemctl start docker
+systemctl enable docker.service
 
 ## 2. kubeadm install
 1. systemctl stop firewalld && systemctl disable firewalld
